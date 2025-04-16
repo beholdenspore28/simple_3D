@@ -218,7 +218,11 @@ SV_API void sv2_normalize(sv2 *v) {
 // of 1
 SV_API void sv3_normalize(sv3 *v) {
   float m = sv3_magnitude(*v);
-  sv3_scale(v, 1 / m);
+  if (m == 0) { // prevent NAN values
+    *v = (sv3){0,0,0};
+    return;    
+  }
+  sv3_scale(v, 1/m);
 }
 
 // Returns a vector which points in the same direction as v, but has a magnitude
