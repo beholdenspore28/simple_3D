@@ -4,9 +4,9 @@
 #include <math.h>
 
 // For added convenience, you can use printf(SV3_TO_STRING(vec)) .
-#define SV2_TO_STRING(v) "{%f, %f}\n", v.x, v.y
-#define SV3_TO_STRING(v) "{%f, %f, %f}\n", v.x, v.y, v.z
-#define SV4_TO_STRING(v) "{%f, %f, %f, %f}\n", q.x, q.y, q.z, q.w
+#define SV2_TO_STRING(v) "{%f, %f}", v.x, v.y
+#define SV3_TO_STRING(v) "{%f, %f, %f}", v.x, v.y, v.z
+#define SV4_TO_STRING(v) "{%f, %f, %f, %f}", q.x, q.y, q.z, q.w
 
 // You can set this to your floating point epsilon of choice.
 // Though as it gets smaller, it also loses accuracy.
