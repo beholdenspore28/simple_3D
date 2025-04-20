@@ -378,19 +378,53 @@ SV_API sv2 sv2_noise(sv2 seed) {
   return v;
 }
 
+// Two dimensional pseudo-random noise
+static inline float sv_noise2(unsigned int x, unsigned int y) {
+  float wave = sinf(x * 53 + y * 97) * 6151;
+  return wave - floorf(wave);
+}
+
+// Three dimensional pseudo-random noise
+static inline float sv_noise3(unsigned int x, unsigned int y, unsigned int z) {
+  float wave = sinf(x * 53 + y * 97 + z * 193) * 6151;
+  return wave - floorf(wave);
+}
+
+#if 1
+SV_API sv3 sv3_noise(unsigned int seed, float range) {
+  float d, x, y, z;
+  int i = 0;
+  do {
+    x = sv_noise3(i + seed + 1, i + seed, i + seed) * (2.0) - 1.0;
+    y = sv_noise3(i + seed, i + seed + 1, i + seed) * (2.0) - 1.0;
+    z = sv_noise3(i + seed, i + seed, i + seed + 1) * (2.0) - 1.0;
+    d = x * x + y * y + z * z;
+    i++;
+  } while (d > 1.0);
+  return sv3_scaled((sv3){x, y, z}, range);
+}
+#else
 // Returns a seeded pseudo-random unit length vector
 SV_API sv3 sv3_noise(sv3 seed) {
-  sv3 v = (sv3){
-      .x = sinf(seed.x * 53 + seed.y * 97 + seed.z * 193) * 6151,
-      .y = sinf(seed.x * 97 + seed.y * 53 + seed.z * 6151) * 193,
-      .z = sinf(seed.x * 193 + seed.y * 6151 + seed.z * 97) * 53,
-  };
-
-  v.x -= floorf(v.x);
-  v.y -= floorf(v.y);
-  v.z -= floorf(v.z);
+  sv3 v = {0};
+  do {
+    v = (sv3){
+        .x = sinf(seed.x * 53 + seed.y * 97 + seed.z * 193) * 6151,
+        .y = sinf(seed.x * 97 + seed.y * 53 + seed.z * 6151) * 193,
+        .z = sinf(seed.x * 193 + seed.y * 6151 + seed.z * 97) * 53,
+    };
+  
+    v.x -= floorf(v.x);
+    v.y -= floorf(v.y);
+    v.z -= floorf(v.z);
+    
+    sv3_give(&seed, (sv3){1,1,1});
+    
+  } while (sv3_magnitude(v) > 1.0);
+  sv3_give(&v, (sv3){-1,-1,-1});
   return v;
 }
+#endif
 
 // Returns a seeded pseudo-random unit length vector
 SV_API sv4 sv4_noise(sv4 seed) {
